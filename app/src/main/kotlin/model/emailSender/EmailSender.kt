@@ -39,7 +39,7 @@ class EmailSender private constructor() {
         this.smtp = domainToServer[this.email?.getDomain()] ?: throw IllegalArgumentException("Invalid email format")
     }
 
-    fun send(recipients: List<Email>, subject: String, text: String, filePath: String?) {
+    fun send(recipients: List<Email>, subject: String, text: String, filePath: String? = null) {
         if (recipients.size > 30) {
             throw IllegalArgumentException("Too many recipients")
         }
@@ -74,5 +74,15 @@ class EmailSender private constructor() {
         email.setMsg(text)
 
         email.send()
+    }
+
+    private fun validateAuthData() : String? {
+        val recipients: List<Email> = listOf(this.email ?: throw IllegalArgumentException("Email can not be null"))
+        try {
+            send(recipients, "Test e-mail", "This in the test e-mail from sender")
+        } catch (e: Exception) {
+            return "Incorrect Auth Data"
+        }
+        return null
     }
 }
