@@ -2,6 +2,7 @@ package model.emailSender
 
 import org.apache.commons.mail.EmailAttachment
 import org.apache.commons.mail.MultiPartEmail
+import java.util.IllegalFormatException
 import kotlin.io.path.Path
 import kotlin.io.path.exists
 
@@ -36,6 +37,11 @@ class EmailSender private constructor() {
     constructor(email: String, password: String) : this() {
         this.email = Email(email)
         this.password = password
+
+        validateAuthData()?.let { message ->
+            throw IllegalArgumentException(message)
+        }
+
         this.smtp = domainToServer[this.email?.getDomain()] ?: throw IllegalArgumentException("Invalid email format")
     }
 
@@ -46,7 +52,7 @@ class EmailSender private constructor() {
 
         val email = MultiPartEmail()
 
-        filePath?.apply {
+        filePath?.let {
             val attach = EmailAttachment()
             if (!Path(filePath).exists()) {
                 throw IllegalArgumentException("Path does not exist")
@@ -76,7 +82,7 @@ class EmailSender private constructor() {
         email.send()
     }
 
-    private fun validateAuthData() : String? {
+    private fun validateAuthData(): String? {
         val recipients: List<Email> = listOf(this.email ?: throw IllegalArgumentException("Email can not be null"))
         try {
             send(recipients, "Test e-mail", "This in the test e-mail from sender")
