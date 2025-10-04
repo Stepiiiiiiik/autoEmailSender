@@ -1,7 +1,7 @@
 package model.emailSender
 
 class EmailSender {
-    private val email: String
+    private val email: Email
     private val password: String
     private val smtp: mailServer
 
@@ -11,7 +11,32 @@ class EmailSender {
         yandex,
     }
 
-    private val server: Map<mailServer, Pair<String, Int>> = mapOf(
+    private inner class Email {
+        val email: String
+
+        public constructor(email: String) {
+            if (!validateEmail(email)) {
+                throw IllegalArgumentException("Invalid email format")
+            }
+            this.email = email
+        }
+
+        public fun getDomain(): String {
+            val split: List<String> = email.split("@")
+            if (split.size != 2) {
+                throw IllegalArgumentException("Invalid email format")
+            }
+            return split[1]
+        }
+
+        private fun validateEmail(email: String): Boolean {
+            val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"
+            return email.matches(Regex(emailRegex))
+        }
+
+    }
+
+    private val serverList: Map<mailServer, Pair<String, Int>> = mapOf(
         mailServer.gmail to Pair("smtp.gmail.com", 465),
         mailServer.mailru to Pair("smtp.mail.ru", 465),
         mailServer.yandex to Pair("smtp.yandex.ru", 465),
@@ -28,20 +53,8 @@ class EmailSender {
     )
 
     public constructor(email: String, password: String) {
-        if (!validateEmail(email)) {
-            throw IllegalArgumentException("Invalid email")
-        }
-        val splitEmail: List<String> = email.split("@")
-        if (splitEmail.size != 2) {
-            throw IllegalArgumentException("Invalid email")
-        }
-        this.smtp = this.domainToServer[splitEmail[1]] ?: throw IllegalArgumentException("Unsupported email domain")
-        this.email = email
+        this.email = Email(email)
         this.password = password
-    }
-
-    private fun validateEmail(email: String): Boolean {
-        val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"
-        return email.matches(Regex(emailRegex))
+        this.smtp = domainToServer[this.email.getDomain()] ?: throw IllegalArgumentException("Invalid email format")
     }
 }
