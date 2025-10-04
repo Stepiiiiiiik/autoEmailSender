@@ -26,7 +26,7 @@ class EmailSender private constructor() {
 
     private val domainToServer: Map<String, MailServer> = mapOf(
         "gmail.com" to MailServer.Gmail,
-        "mailru" to MailServer.MailRu,
+        "mail.ru" to MailServer.MailRu,
         "bk.ru" to MailServer.MailRu,
         "inbox.ru" to MailServer.MailRu,
         "list.ru" to MailServer.MailRu,
@@ -37,12 +37,12 @@ class EmailSender private constructor() {
     constructor(email: String, password: String) : this() {
         this.email = Email(email)
         this.password = password
+        this.smtp = domainToServer[this.email?.getDomain()] ?: throw IllegalArgumentException("Invalid email format")
 
         validateAuthData()?.let { message ->
             throw IllegalArgumentException(message)
         }
 
-        this.smtp = domainToServer[this.email?.getDomain()] ?: throw IllegalArgumentException("Invalid email format")
     }
 
     fun send(recipients: List<Email>, subject: String, text: String, filePath: String? = null) {
