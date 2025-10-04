@@ -1,20 +1,20 @@
 package model.emailSender
 
-class Email {
-    private val email: String
+class Email() {
+    private var email: String = ""
 
-    public constructor(email: String) {
+    constructor(email: String) : this() {
         if (!validateEmail(email)) {
             throw IllegalArgumentException("Invalid email format")
         }
         this.email = email
     }
 
-    public fun getEmail() : String {
+    fun getEmail() : String {
         return email
     }
 
-    public fun getDomain(): String {
+    fun getDomain(): String {
         val split: List<String> = email.split("@")
         if (split.size != 2) {
             throw IllegalArgumentException("Invalid email format")
