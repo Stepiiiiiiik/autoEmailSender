@@ -6,50 +6,25 @@ class EmailSender {
     private val smtp: mailServer
 
     private enum class mailServer {
-        gmail,
-        mailru,
-        yandex,
-    }
-
-    private inner class Email {
-        val email: String
-
-        public constructor(email: String) {
-            if (!validateEmail(email)) {
-                throw IllegalArgumentException("Invalid email format")
-            }
-            this.email = email
-        }
-
-        public fun getDomain(): String {
-            val split: List<String> = email.split("@")
-            if (split.size != 2) {
-                throw IllegalArgumentException("Invalid email format")
-            }
-            return split[1]
-        }
-
-        private fun validateEmail(email: String): Boolean {
-            val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"
-            return email.matches(Regex(emailRegex))
-        }
-
+        Gmail,
+        MailRu,
+        Yandex,
     }
 
     private val serverList: Map<mailServer, Pair<String, Int>> = mapOf(
-        mailServer.gmail to Pair("smtp.gmail.com", 465),
-        mailServer.mailru to Pair("smtp.mail.ru", 465),
-        mailServer.yandex to Pair("smtp.yandex.ru", 465),
+        mailServer.Gmail to Pair("smtp.gmail.com", 465),
+        mailServer.MailRu to Pair("smtp.mail.ru", 465),
+        mailServer.Yandex to Pair("smtp.yandex.ru", 465),
     )
 
     private val domainToServer: Map<String, mailServer> = mapOf(
-        "gmail.com" to mailServer.gmail,
-        "mailru" to mailServer.mailru,
-        "bk.ru" to mailServer.mailru,
-        "inbox.ru" to mailServer.mailru,
-        "list.ru" to mailServer.mailru,
-        "yandex.ru" to mailServer.yandex,
-        "ya.ru" to mailServer.yandex,
+        "gmail.com" to mailServer.Gmail,
+        "mailru" to mailServer.MailRu,
+        "bk.ru" to mailServer.MailRu,
+        "inbox.ru" to mailServer.MailRu,
+        "list.ru" to mailServer.MailRu,
+        "yandex.ru" to mailServer.Yandex,
+        "ya.ru" to mailServer.Yandex,
     )
 
     public constructor(email: String, password: String) {
