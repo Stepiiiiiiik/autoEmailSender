@@ -4,7 +4,7 @@ import org.apache.commons.mail.EmailAttachment
 import org.apache.commons.mail.MultiPartEmail
 
 class EmailSender private constructor() {
-    private var email = Email()
+    private var email: Email? = null
     private var password = ""
     private var smtp = MailServer.Default
 
@@ -34,6 +34,6 @@ class EmailSender private constructor() {
     constructor(email: String, password: String) : this() {
         this.email = Email(email)
         this.password = password
-        this.smtp = domainToServer[this.email.getDomain()] ?: throw IllegalArgumentException("Invalid email format")
+        this.smtp = domainToServer[this.email?.getDomain()] ?: throw IllegalArgumentException("Invalid email format")
     }
 }

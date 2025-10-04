@@ -1,9 +1,9 @@
 package model.emailSender
 
-class Email() {
-    private var email: String = ""
+class Email {
+    private var email: String
 
-    constructor(email: String) : this() {
+    constructor(email: String) {
         if (!validateEmail(email)) {
             throw IllegalArgumentException("Invalid email format")
         }
