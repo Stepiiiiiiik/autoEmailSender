@@ -1,33 +1,37 @@
 package model.emailSender
 
-class EmailSender {
-    private val email: Email
-    private val password: String
-    private val smtp: mailServer
+import org.apache.commons.mail.EmailAttachment
+import org.apache.commons.mail.MultiPartEmail
 
-    private enum class mailServer {
+class EmailSender private constructor() {
+    private var email = Email()
+    private var password = ""
+    private var smtp = MailServer.Default
+
+    private enum class MailServer {
         Gmail,
         MailRu,
         Yandex,
+        Default
     }
 
-    private val serverList: Map<mailServer, Pair<String, Int>> = mapOf(
-        mailServer.Gmail to Pair("smtp.gmail.com", 465),
-        mailServer.MailRu to Pair("smtp.mail.ru", 465),
-        mailServer.Yandex to Pair("smtp.yandex.ru", 465),
+    private val serverList: Map<MailServer, Pair<String, Int>> = mapOf(
+        MailServer.Gmail to Pair("smtp.gmail.com", 465),
+        MailServer.MailRu to Pair("smtp.mail.ru", 465),
+        MailServer.Yandex to Pair("smtp.yandex.ru", 465),
     )
 
-    private val domainToServer: Map<String, mailServer> = mapOf(
-        "gmail.com" to mailServer.Gmail,
-        "mailru" to mailServer.MailRu,
-        "bk.ru" to mailServer.MailRu,
-        "inbox.ru" to mailServer.MailRu,
-        "list.ru" to mailServer.MailRu,
-        "yandex.ru" to mailServer.Yandex,
-        "ya.ru" to mailServer.Yandex,
+    private val domainToServer: Map<String, MailServer> = mapOf(
+        "gmail.com" to MailServer.Gmail,
+        "mailru" to MailServer.MailRu,
+        "bk.ru" to MailServer.MailRu,
+        "inbox.ru" to MailServer.MailRu,
+        "list.ru" to MailServer.MailRu,
+        "yandex.ru" to MailServer.Yandex,
+        "ya.ru" to MailServer.Yandex,
     )
 
-    public constructor(email: String, password: String) {
+    constructor(email: String, password: String) : this() {
         this.email = Email(email)
         this.password = password
         this.smtp = domainToServer[this.email.getDomain()] ?: throw IllegalArgumentException("Invalid email format")
